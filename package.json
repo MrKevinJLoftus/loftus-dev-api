@@ -1,0 +1,23 @@
+{
+  "name": "loftus-dev-api",
+  "version": "1.0.0",
+  "description": "API serving loftus.dev",
+  "main": "app.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "dependencies": {
+    "body-parser": "^1.18.3",
+    "express": "^4.16.3"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/MrKevinJLoftus/loftus-dev-api.git"
+  },
+  "author": "Kevin Loftus",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/MrKevinJLoftus/loftus-dev-api/issues"
+  },
+  "homepage": "https://github.com/MrKevinJLoftus/loftus-dev-api#readme"
+}
