@@ -15,7 +15,7 @@ exports.userSignUp = (req, res, next) => {
         user.save()
           .then(result => {
             const token = jwt.sign({username: result.username, userId: result._id},
-              process.env.JWT_KEY,
+              process.env.LOFTUS_DEV_JWT_KEY,
               { expiresIn: '4h' }
             );
             res.status(200).json({
@@ -40,13 +40,18 @@ exports.userLogin = async (req, res, next) => {
     // found user
     const hashMatch = await bcrypt.compare(req.body.password, user.password);
     if (!hashMatch) {
-    next(authError);
+        throw authError;
     }
     // hashes match, correct password entered
     // time to generate user's JWT
-    const token = jwt.sign({username: fetchedUser.username, userId: fetchedUser._id, email: fetchedUser.email},
-        process.env.JWT_KEY,
-        { expiresIn: '4h' }
+    const token = jwt.sign(
+        {
+            username: fetchedUser.username, userId: fetchedUser._id
+        },
+        process.env.LOFTUS_DEV_JWT_KEY,
+        {
+            expiresIn: '4h'
+        }
     );
     console.log('login successful!');
     res.status(200).json({

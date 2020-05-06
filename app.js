@@ -1,10 +1,21 @@
 const path = require('path');
 const express = require('express');
 const bodyParser = require('body-parser');
-const app = express();
+const mongoose = require('mongoose');
 
 // external routing files
 const userRoutes = require('./routes/user');
+
+const app = express();
+
+mongoose.connect(process.env.MONGODB_URI)
+  .then(() => {
+    console.log('Connected to database!');
+  })
+  .catch((err) => {
+    console.log('Connection failed!');
+    console.log(err);
+});
 
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({extended:false}));

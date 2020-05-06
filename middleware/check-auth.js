@@ -6,7 +6,7 @@ module.exports = (req, res, next) => {
   try {
     const token = req.headers.authorization.split(" ")[1];
     const decodedToken = jwt.verify(token,
-      process.env.JWT_KEY
+      process.env.LOFTUS_DEV_JWT_KEY
     );
     req.userData = {username: decodedToken.username, userId: decodedToken.userId, email: decodedToken.email};
     // if code gets here with no errors thrown, token is present and valid
