@@ -6,7 +6,6 @@ const jwt = require('jsonwebtoken');
 const User = require('../models/user');
 
 const checkAuth = require('../middleware/check-auth');
-const checkAdmin = require('../middleware/check-isAdmin');
 const userController = require('../controllers/user');
 const asyncWrapper = require('../middleware/async-wrapper');
 
