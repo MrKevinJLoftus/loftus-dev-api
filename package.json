@@ -7,8 +7,12 @@
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "dependencies": {
+    "bcrypt": "^4.0.1",
     "body-parser": "^1.18.3",
-    "express": "^4.16.3"
+    "express": "^4.16.3",
+    "jsonwebtoken": "^8.5.1",
+    "mongoose": "^5.9.12",
+    "mongoose-unique-validator": "^2.0.3"
   },
   "repository": {
     "type": "git",
@@ -19,5 +23,8 @@
   "bugs": {
     "url": "https://github.com/MrKevinJLoftus/loftus-dev-api/issues"
   },
-  "homepage": "https://github.com/MrKevinJLoftus/loftus-dev-api#readme"
+  "homepage": "https://github.com/MrKevinJLoftus/loftus-dev-api#readme",
+  "devDependencies": {
+    "nodemon": "^2.0.3"
+  }
 }
