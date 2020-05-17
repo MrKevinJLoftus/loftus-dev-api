@@ -7,7 +7,7 @@ const checkAdmin = require('../middleware/check-admin');
 const router = express.Router();
 
 router.post("/post", checkAdmin, asyncWrapper(blogPostController.createNewBlogPost));
-router.get("/post/:title", asyncWrapper(blocPostController.fetchPostByTitle));
+router.get("/post/:title", asyncWrapper(blogPostController.fetchPostByTitle));
 router.get("/posts", asyncWrapper(blogPostController.fetchAllPosts));
 
 module.exports = router;
