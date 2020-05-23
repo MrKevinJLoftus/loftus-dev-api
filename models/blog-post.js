@@ -5,7 +5,8 @@ const blogPostSchema = mongoose.Schema({
   title: { type: String, required: true },
   kebabTitle: { type: String, required: true },
   body: { type: String, required: true },
-  blurb: { type: String, required: true }
+  blurb: { type: String, required: true },
+  tags: { type: [String], required: true }
 });
 
 module.exports = mongoose.model('BlogPost', blogPostSchema);

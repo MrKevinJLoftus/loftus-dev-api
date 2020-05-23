@@ -1,8 +1,8 @@
 const BlogPost = require('../models/blog-post');
-const User = require('../models/user');
+const UserController = require('./user');
 
 class BlogPostDoc {
-  // new posts come in as type { title, body }
+  // new posts come in as type { title, body, tags }
   // format title to generate the kebabTitle
   // grab first 250 characters of post to use as the blurb
   constructor(post, userId) {
@@ -10,6 +10,7 @@ class BlogPostDoc {
     this.kebabTitle = this.title.toLowerCase().replace(` `, `-`);
     this.body = post.body.trim();
     this.blurb = this.body.substring(0, 250);
+    this.tags = post.tags;
     this.createdBy = userId;
   }
 }
@@ -35,6 +36,9 @@ exports.fetchPostByTitle = async (req, res) => {
       message: `Error retrieving blog post.`
     });
   } else {
+    // attach author to post with a query
+    const author = await UserController.fetchUserById(foundPost.createdBy);
+    foundPost.author = `${author.firstName} ${author.lastName}`;
     res.status(200).json({
       post: foundPost,
       message: `Successfully fetched blog post.`
@@ -53,8 +57,17 @@ exports.fetchAllPosts = async (req, res) => {
       message: `Error fetching blog posts.`
     });
   } else {
+    // fetch names of users who wrote these posts
+    const postAuthors = await UserController.fetchUsersById(allBlogPosts.map(p => p.createdBy));
+    const formattedBlogPosts = allBlogPosts.map(p => {
+      const postAuthor = postAuthors.find(a => a.id === p.createdBy);
+      return {
+        ...p,
+        author: `${postAuthor.firstName} ${postAuthor.lastName}`
+      }
+    });
     res.status(200).json({
-      posts: allBlogPosts,
+      posts: formattedBlogPosts,
       message: `Successfully fetched blog posts.`
     });
   }

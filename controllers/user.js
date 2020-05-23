@@ -32,3 +32,32 @@ exports.userLogin = async (req, res) => {
     userId: fetchedUser._id
   });
 }
+
+exports.fetchUserById = async (userId) => {
+  const fetchedUser = await User.findOne({ _id: userId });
+  if (!fetchedUser) {
+    console.error('Error fetching user by ID!');
+    throw new Error('');
+  } else {
+    const {firstName, lastName} = fetchedUser;
+    return {
+      firstName,
+      lastName
+    };
+  }
+}
+
+exports.fetchUsersById = async (userIds) => {
+  const fetchedUsers = await User.find({ _id: { $in: userIds } });
+  if (!fetchedUsers) {
+    console.error('Error fetching users by ID!');
+    throw new Error('');
+  } else {
+    return fetchedUsers.map(user => ({
+      id: user._id,
+      firstName: user.firstName,
+      lastName: user.lastName
+    }));
+  }
+}
+
