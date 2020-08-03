@@ -1,21 +1,12 @@
 const path = require('path');
 const express = require('express');
 const bodyParser = require('body-parser');
-const mongoose = require('mongoose');
 
 // external routing files
 const userRoutes = require('./routes/user');
+const blogRoutes = require('./routes/blog-post');
 
 const app = express();
-
-mongoose.connect(process.env.MONGODB_URI)
-  .then(() => {
-    console.log('Connected to database!');
-  })
-  .catch((err) => {
-    console.log('Connection failed!');
-    console.log(err);
-});
 
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({extended:false}));
@@ -29,6 +20,7 @@ app.use((req, res, next) => {
 });
 
 app.use("/api/user", userRoutes);
+app.use("/api/blog", blogRoutes);
 
 app.use((req, res, next) => {
     console.log('sending index.html');
