@@ -37,22 +37,16 @@ exports.userLogin = async (req, res) => {
 exports.createUser = async (req, res) => {
   // create a new user and store it in the database
   console.log(`creating new user ${req.body.username}`);
-  bcrypt.hash(req.body.password, 15)
-    .then(hash => {
-      const newUser = await dbconn.executeMysqlQuery(queries.CREATE_USER, [req.body.username, hash]);
-      const token = jwt.sign({username: newUser.username, userId: newUser.user_id},
-        process.env.JWT_KEY,
-        { expiresIn: '4h' }
-      );
-      res.status(200).json({
-        token: token,
-        expiresIn: 3600,
-        userId: newUser.user_id
-      });
-    })
-    .catch(err => {
-      console.log(err);
-      next(err);
-    });
+  const hash = await bcrypt.hash(req.body.password, 15)
+  const newUser = await dbconn.executeMysqlQuery(queries.CREATE_USER, [req.body.username, hash]);
+  const token = jwt.sign({username: newUser.username, userId: newUser.user_id},
+    process.env.JWT_KEY,
+    { expiresIn: '4h' }
+  );
+  res.status(200).json({
+    token: token,
+    expiresIn: 3600,
+    userId: newUser.user_id
+  });
 }
 

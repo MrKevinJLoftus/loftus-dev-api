@@ -8,8 +8,8 @@ exports.executeMysqlQuery = async (query, params) => {
         const connection = await getConnection();
         let result;
         try {
+            console.log(`Querying MySQL: ${query}${params ? ` with params ${params.join()}` : ''}`);
             connection.query(query, params, (error, results, fields) => {
-                console.log(results);
                 if (error) {
                     console.error(error);
                 } else {
