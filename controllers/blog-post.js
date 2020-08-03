@@ -34,13 +34,13 @@ exports.createNewBlogPost = async (req, res) => {
  */
 exports.fetchPostByTitle = async (req, res) => {
   const foundPost = await dbconn.executeMysqlQuery(queries.FIND_POST_BY_KEBAB_TITLE, [req.params.title]);
-  if (!foundPost) {
+  if (!foundPost || foundPost.length < 1) {
     res.status(404).json({
       message: `Error retrieving blog post.`
     });
   } else {
     res.status(200).json({
-      post: foundPost,
+      post: foundPost[0],
       message: `Successfully fetched blog post.`
     });
   }

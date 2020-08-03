@@ -7,11 +7,11 @@ const authError = new Error('Your username or password is incorrect.');
 exports.userLogin = async (req, res) => {
   console.log(`${req.body.username} logging in`);
   const fetchedUser = await dbconn.executeMysqlQuery(queries.FIND_USER_BY_USERNAME, [req.body.username]);
-  if (!fetchedUser) {
+  if (!fetchedUser || fetchedUser.length < 1) {
     throw authError;
   }
   // found user
-  const hashMatch = await bcrypt.compare(req.body.password, fetchedUser.password);
+  const hashMatch = await bcrypt.compare(req.body.password, fetchedUser[0].password);
   if (!hashMatch) {
     throw authError;
   }
@@ -19,7 +19,7 @@ exports.userLogin = async (req, res) => {
   // time to generate user's JWT
   const token = jwt.sign(
     {
-      username: fetchedUser.username, userId: fetchedUser.user_id
+      username: fetchedUser[0].username, userId: fetchedUser[0].user_id
     },
     process.env.LOFTUS_DEV_JWT_KEY,
     {
@@ -30,7 +30,7 @@ exports.userLogin = async (req, res) => {
   res.status(200).json({
     token: token,
     expiresIn: 14400,
-    userId: fetchedUser.user_id
+    userId: fetchedUser[0].user_id
   });
 }
 
@@ -39,14 +39,14 @@ exports.createUser = async (req, res) => {
   console.log(`creating new user ${req.body.username}`);
   const hash = await bcrypt.hash(req.body.password, 15)
   const newUser = await dbconn.executeMysqlQuery(queries.CREATE_USER, [req.body.username, hash]);
-  const token = jwt.sign({username: newUser.username, userId: newUser.user_id},
+  const token = jwt.sign({username: newUser[0].username, userId: newUser[0].user_id},
     process.env.JWT_KEY,
     { expiresIn: '4h' }
   );
   res.status(200).json({
     token: token,
     expiresIn: 3600,
-    userId: newUser.user_id
+    userId: newUser[0].user_id
   });
 }
 
