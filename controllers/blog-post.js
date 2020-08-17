@@ -7,7 +7,7 @@ class BlogPost {
   // grab first 250 characters of post to use as the blurb
   constructor(post, userId) {
     this.title = post.title || ``;
-    this.kebabTitle = this.title.toLowerCase().replace(` `, `-`);
+    this.kebabTitle = this.title.toLowerCase().replace(/\s/g, `-`);
     this.body = post.body.trim();
     this.blurb = this.body.substring(0, 250);
     this.tags = post.tags;
@@ -22,7 +22,7 @@ exports.createNewBlogPost = async (req, res) => {
   const newPost = new BlogPost(req.body.blogPost, req.userData.userId);
   const savedPost = await dbconn.executeMysqlQuery(queries.CREATE_POST, [
     newPost.title, newPost.kebabTitle, newPost.body,
-    newPost.blurb, newPost.tags, newPost.createdBy
+    newPost.blurb, newPost.tags && newPost.tags.join(','), newPost.createdBy
   ]);
   res.status(200).json({
     message: `Blog post saved successfully.`
@@ -57,6 +57,11 @@ exports.fetchAllPosts = async (req, res) => {
       message: `Error fetching blog posts.`
     });
   } else {
+    for (let i = 0; i < allBlogPosts.length; i++) {
+      if (allBlogPosts[i].tags) {
+        allBlogPosts[i].tags = allBlogPosts[i].tags.split(',');
+      }
+    }
     res.status(200).json({
       posts: allBlogPosts,
       message: `Successfully fetched blog posts.`

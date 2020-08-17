@@ -19,7 +19,7 @@ exports.userLogin = async (req, res) => {
   // time to generate user's JWT
   const token = jwt.sign(
     {
-      username: fetchedUser[0].username, userId: fetchedUser[0].user_id
+      username: fetchedUser[0].username, userId: fetchedUser[0].user_id, isAdmin: fetchedUser[0].isAdmin === 1
     },
     process.env.LOFTUS_DEV_JWT_KEY,
     {
