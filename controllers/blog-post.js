@@ -39,6 +39,7 @@ exports.fetchPostByTitle = async (req, res) => {
       message: `Error retrieving blog post.`
     });
   } else {
+    splitPostTags(foundPost[0]);
     res.status(200).json({
       post: foundPost[0],
       message: `Successfully fetched blog post.`
@@ -58,13 +59,21 @@ exports.fetchAllPosts = async (req, res) => {
     });
   } else {
     for (let i = 0; i < allBlogPosts.length; i++) {
-      if (allBlogPosts[i].tags) {
-        allBlogPosts[i].tags = allBlogPosts[i].tags.split(',');
-      }
+      splitPostTags(allBlogPosts[i]);
     }
     res.status(200).json({
       posts: allBlogPosts,
       message: `Successfully fetched blog posts.`
     });
+  }
+}
+
+/**
+ * Convert comma delimited string to array.
+ * @param {*} blogPost 
+ */
+function splitPostTags(blogPost) {
+  if (blogPost.tags) {
+    blogPost.tags = blogPost.tags.split(',');
   }
 }
