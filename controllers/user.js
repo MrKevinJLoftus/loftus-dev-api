@@ -1,38 +1,17 @@
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
-const User = require('../models/user');
+const dbconn = require('../utilities/database_connectors');
+const queries = require('../queries/user');
 const authError = new Error('Your username or password is incorrect.');
-
-// Commenting out this function because it is only needed in development.
-// Use case for creating new users from prod site does not exist at the moment.
-// exports.userSignUp = async (req, res) => {
-//   // create a new user and store it in the database
-//   console.log("creating new user");
-//   const hash = await bcrypt.hash(req.body.password, 15);
-//   const user = new User({
-//     username: req.body.username,
-//     password: hash
-//   });
-//   const saveResult = await user.save();
-//   const token = jwt.sign({username: saveResult.username, userId: saveResult._id},
-//     process.env.LOFTUS_DEV_JWT_KEY,
-//     { expiresIn: '4h' }
-//   );
-//   res.status(200).json({
-//     token: token,
-//     expiresIn: 14400,
-//     userId: saveResult._id
-//   });
-// }
 
 exports.userLogin = async (req, res) => {
   console.log(`${req.body.username} logging in`);
-  const fetchedUser = await User.findOne({ username: req.body.username });
-  if (!fetchedUser) {
+  const fetchedUser = await dbconn.executeMysqlQuery(queries.FIND_USER_BY_USERNAME, [req.body.username]);
+  if (!fetchedUser || fetchedUser.length < 1) {
     throw authError;
   }
   // found user
-  const hashMatch = await bcrypt.compare(req.body.password, fetchedUser.password);
+  const hashMatch = await bcrypt.compare(req.body.password, fetchedUser[0].password);
   if (!hashMatch) {
     throw authError;
   }
@@ -40,7 +19,7 @@ exports.userLogin = async (req, res) => {
   // time to generate user's JWT
   const token = jwt.sign(
     {
-      username: fetchedUser.username, userId: fetchedUser._id
+      username: fetchedUser[0].username, userId: fetchedUser[0].user_id, isAdmin: fetchedUser[0].isAdmin === 1
     },
     process.env.LOFTUS_DEV_JWT_KEY,
     {
@@ -51,6 +30,23 @@ exports.userLogin = async (req, res) => {
   res.status(200).json({
     token: token,
     expiresIn: 14400,
-    userId: fetchedUser._id
+    userId: fetchedUser[0].user_id
   });
 }
+
+exports.createUser = async (req, res) => {
+  // create a new user and store it in the database
+  console.log(`creating new user ${req.body.username}`);
+  const hash = await bcrypt.hash(req.body.password, 15)
+  const newUser = await dbconn.executeMysqlQuery(queries.CREATE_USER, [req.body.username, hash]);
+  const token = jwt.sign({username: newUser[0].username, userId: newUser[0].user_id},
+    process.env.JWT_KEY,
+    { expiresIn: '4h' }
+  );
+  res.status(200).json({
+    token: token,
+    expiresIn: 3600,
+    userId: newUser[0].user_id
+  });
+}
+
