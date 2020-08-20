@@ -9,7 +9,7 @@ class BlogPost {
     this.title = post.title || ``;
     this.kebabTitle = this.title.toLowerCase().replace(/\s/g, `-`);
     this.body = post.body.trim();
-    this.blurb = this.body.substring(0, 250);
+    this.blurb = this.body.substring(0, 1000);
     this.tags = post.tags;
     this.createdBy = userId;
   }

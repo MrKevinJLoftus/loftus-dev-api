@@ -5,7 +5,9 @@ module.exports = {
     where b.kebab_title = ?
       and b.created_by = u.user_id`,
   GET_ALL_POST_BLURBS: `select
-      b.title, b.kebab_title as kebabTitle, b.blurb, concat(u.first_name, ' ', u.last_name) as author, b.tags
+      b.title, b.kebab_title as kebabTitle,
+      b.blurb, concat(u.first_name, ' ', u.last_name) as author, b.tags,
+      b.created_date as createdDate
     from blog_posts b, users u
     where b.created_by = u.user_id
     order by b.created_date`,
