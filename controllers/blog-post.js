@@ -32,8 +32,8 @@ exports.createNewBlogPost = async (req, res) => {
 /**
  * Fetch a specific blog post by its kebabTitle.
  */
-exports.fetchPostByTitle = async (req, res) => {
-  const foundPost = await dbconn.executeMysqlQuery(queries.FIND_POST_BY_KEBAB_TITLE, [req.params.title]);
+exports.fetchPostById = async (req, res) => {
+  const foundPost = await dbconn.executeMysqlQuery(queries.FIND_POST_BY_ID, [req.params.id]);
   if (!foundPost || foundPost.length < 1) {
     res.status(404).json({
       message: `Error retrieving blog post.`
@@ -71,15 +71,15 @@ exports.fetchAllPosts = async (req, res) => {
 /**
  * Set the deleted flag on the specified post.
  */
-exports.deletePostByKebabTitle = async (req, res) => {
-  const foundPost = await dbconn.executeMysqlQuery(queries.FIND_POST_BY_KEBAB_TITLE, [req.params.title]);
+exports.deletePostById = async (req, res) => {
+  const foundPost = await dbconn.executeMysqlQuery(queries.FIND_POST_BY_ID, [req.params.id]);
   if (!foundPost || foundPost.length < 1) {
     res.status(404).json({
       message: `Error deleting blog post.`
     });
   } else {
     // set deleted to 1
-    const updatedPost = await dbconn.executeMysqlQuery(queries.DELETE_POST_BY_KEBAB_TITLE, [foundPost[0].kebabTitle]);
+    const updatedPost = await dbconn.executeMysqlQuery(queries.DELETE_POST_BY_ID, [foundPost[0].id]);
     res.status(200).json({
       message: `Successfully deleted blog post.`
     });
