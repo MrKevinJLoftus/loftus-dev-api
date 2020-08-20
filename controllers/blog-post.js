@@ -52,7 +52,7 @@ exports.fetchPostByTitle = async (req, res) => {
  * TODO: Lazily paginate for future case when many posts exist and this becomes inefficient.
  */
 exports.fetchAllPosts = async (req, res) => {
-  const allBlogPosts = await dbconn.executeMysqlQuery(queries.GET_ALL_POST_BLURBS);
+  const allBlogPosts = await dbconn.executeMysqlQuery(queries.GET_ALL_POSTS);
   if (!allBlogPosts) {
     res.status(404).json({
       message: `Error fetching blog posts.`
@@ -64,6 +64,24 @@ exports.fetchAllPosts = async (req, res) => {
     res.status(200).json({
       posts: allBlogPosts,
       message: `Successfully fetched blog posts.`
+    });
+  }
+}
+
+/**
+ * Set the deleted flag on the specified post.
+ */
+exports.deletePostByKebabTitle = async (req, res) => {
+  const foundPost = await dbconn.executeMysqlQuery(queries.FIND_POST_BY_KEBAB_TITLE, [req.params.title]);
+  if (!foundPost || foundPost.length < 1) {
+    res.status(404).json({
+      message: `Error deleting blog post.`
+    });
+  } else {
+    // set deleted to 1
+    const updatedPost = await dbconn.executeMysqlQuery(queries.DELETE_POST_BY_KEBAB_TITLE, [foundPost[0].kebabTitle]);
+    res.status(200).json({
+      message: `Successfully deleted blog post.`
     });
   }
 }

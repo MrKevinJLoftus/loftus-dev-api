@@ -8,5 +8,6 @@ const router = express.Router();
 router.post("/post", checkAdmin, asyncWrapper(blogPostController.createNewBlogPost));
 router.get("/post/:title", asyncWrapper(blogPostController.fetchPostByTitle));
 router.get("/posts", asyncWrapper(blogPostController.fetchAllPosts));
+router.delete("/post/:title", checkAdmin, asyncWrapper(blogPostController.deletePostByKebabTitle));
 
 module.exports = router;
