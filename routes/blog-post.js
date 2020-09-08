@@ -9,5 +9,6 @@ router.post("/post", checkAdmin, asyncWrapper(blogPostController.createNewBlogPo
 router.get("/post/:id", asyncWrapper(blogPostController.fetchPostById));
 router.get("/posts", asyncWrapper(blogPostController.fetchAllPosts));
 router.delete("/post/:id", checkAdmin, asyncWrapper(blogPostController.deletePostById));
+router.patch("/post/:id", checkAdmin, asyncWrapper(blogPostController.updatePostById));
 
 module.exports = router;

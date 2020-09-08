@@ -4,7 +4,7 @@ const dbconn = require('../utilities/database_connectors');
 class BlogPost {
   // new posts come in as type { title, body, tags }
   // format title to generate the kebabTitle
-  // grab first 250 characters of post to use as the blurb
+  // grab first 1000 characters of post to use as the blurb
   constructor(post, userId) {
     this.title = post.title || ``;
     this.kebabTitle = this.title.toLowerCase().replace(/\s/g, `-`);
@@ -20,7 +20,7 @@ class BlogPost {
  */
 exports.createNewBlogPost = async (req, res) => {
   const newPost = new BlogPost(req.body.blogPost, req.userData.userId);
-  const savedPost = await dbconn.executeMysqlQuery(queries.CREATE_POST, [
+  await dbconn.executeMysqlQuery(queries.CREATE_POST, [
     newPost.title, newPost.kebabTitle, newPost.body,
     newPost.blurb, newPost.tags && newPost.tags.join(','), newPost.createdBy
   ]);
@@ -79,9 +79,38 @@ exports.deletePostById = async (req, res) => {
     });
   } else {
     // set deleted to 1
-    const updatedPost = await dbconn.executeMysqlQuery(queries.DELETE_POST_BY_ID, [foundPost[0].id]);
+    await dbconn.executeMysqlQuery(queries.DELETE_POST_BY_ID, [foundPost[0].id]);
     res.status(200).json({
       message: `Successfully deleted blog post.`
+    });
+  }
+}
+
+/**
+ * Updates an existing post with the details provided.
+ */
+exports.updatePostById = async (req, res) => {
+  const updatedPost = new BlogPost(req.body.blogPost, req.userData.userId);
+  const foundPost = await dbconn.executeMysqlQuery(queries.FIND_POST_BY_ID, [req.params.id]);
+  if (!foundPost || foundPost.length < 1) {
+    res.status(404).json({
+      message: `Error updating blog post.`
+    });
+  } else {
+    await dbconn.executeMysqlQuery(
+      queries.UPDATE_POST_BY_ID,
+      [
+        updatedPost.title,
+        updatedPost.kebabTitle,
+        updatedPost.body,
+        updatedPost.blurb,
+        updatedPost.tags && updatedPost.tags.join(','),
+        updatedPost.createdBy,
+        req.params.id
+      ]
+    );
+    res.status(200).json({
+      message: `Successfully updated blog post.`
     });
   }
 }
