@@ -29,9 +29,29 @@ exports.createGoal = async (req, res) => {
  */
 exports.fetchAllGoals = async (req, res) => {
   const results = await dbconn.executeMysqlQuery(queries.FETCH_ALL_GOALS, [req.userData.userId]);
+  // results include 1 row for each update
+  // need to format to have an array of updates on each goal
+  const formattedResults = [];
+  const goalIds = [...new Set(results.map(r => r.goalId))];
+  goalIds.forEach((goalId) => {
+    const rows = results.filter(r => r.goalId === goalId);
+    formattedResults.push({
+      goalId: rows[0].goalId,
+      name: rows[0].name,
+      description: rows[0].desc,
+      frequency: rows[0].frequency,
+      createdDate: rows[0].createdDate,
+      updates: rows.map(r => ({
+        updateId: r.updateId,
+        description: r.updateDescription,
+        rating: r.updateRating,
+        createdDate: r.updateCreatedDate
+      }))
+    });
+  });
   res.status(200).json({
     message: `Goals fetched successfully.`,
-    goals: results
+    goals: formattedResults
   });
 };
 
@@ -44,16 +64,5 @@ exports.createGoalUpdate = async (req, res) => {
   ]);
   res.status(200).json({
     message: `Goal updated successfully.`
-  });
-};
-
-/**
- * Fetch all updates for a specific goal.
- */
-exports.fetchAllUpdatesByGoal = async (req, res) => {
-  const results = await dbconn.executeMysqlQuery(queries.FETCH_ALL_UPDATES_BY_GOAL, [req.params.id]);
-  res.status(200).json({
-    message: `Goal updates fetched successfully.`,
-    updates: results
   });
 };
