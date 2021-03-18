@@ -4,8 +4,8 @@ const queries = require('../queries/metrix');
 class MetrixGoal {
   // new posts come in as type { title, description, frequency }
   constructor(goal, userId) {
-    this.name = goal.title || 'User Goal';
-    this.desc = goal.description?.trim() || '';
+    this.name = goal.name || 'User Goal';
+    this.description = (goal.description || '').trim();
     this.freq = goal.frequency || 1;
     this.createdBy = userId;
   }
@@ -15,13 +15,20 @@ class MetrixGoal {
  * Create a new goal.
  */
 exports.createGoal = async (req, res) => {
-  const goal = new MetrixGoal(req.body, req.userData.userId);
-  await dbconn.executeMysqlQuery(queries.CREATE_GOAL, [
-    goal.name, goal.desc, goal.freq, goal.createdBy
-  ]);
-  res.status(200).json({
-    message: `Goal created successfully.`
-  });
+  try {
+    const goal = new MetrixGoal(req.body, req.userData.userId);
+    await dbconn.executeMysqlQuery(queries.CREATE_GOAL, [
+      goal.name, goal.description, goal.freq, goal.createdBy
+    ]);
+    res.status(200).json({
+      message: `Goal created successfully.`
+    });
+  } catch (ex) {
+    console.error(ex);
+    res.status(500).json({
+      message: `Unable to create goal.`
+    });
+  }
 };
 
 /**
@@ -32,16 +39,16 @@ exports.fetchAllGoals = async (req, res) => {
   // results include 1 row for each update
   // need to format to have an array of updates on each goal
   const formattedResults = [];
-  const goalIds = [...new Set(results.map(r => r.goalId))];
+  const goalIds = [...new Set((results || []).map(r => r.goalId))];
   goalIds.forEach((goalId) => {
     const rows = results.filter(r => r.goalId === goalId);
     formattedResults.push({
       goalId: rows[0].goalId,
       name: rows[0].name,
-      description: rows[0].desc,
+      description: rows[0].description,
       frequency: rows[0].frequency,
       createdDate: rows[0].createdDate,
-      updates: rows.map(r => ({
+      updates: rows.filter(r => r.updateId).map(r => ({
         updateId: r.updateId,
         description: r.updateDescription,
         rating: r.updateRating,
