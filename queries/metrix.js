@@ -1,12 +1,11 @@
 module.exports = {
   CREATE_GOAL: `insert into
-  goals (name, description, freq_days, created_date, created_by)
-  values (?,?,?,now(),?)`,
+  goals (name, description, created_date, created_by)
+  values (?,?,now(),?)`,
   FETCH_ALL_GOALS: `select
     g.goal_id as goalId,
     g.name,
     g.description,
-    g.freq_days as frequency,
     g.created_date as createdDate,
     u.update_id as updateId,
     u.update_desc as updateDescription,

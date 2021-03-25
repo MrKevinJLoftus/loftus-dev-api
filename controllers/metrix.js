@@ -6,7 +6,6 @@ class MetrixGoal {
   constructor(goal, userId) {
     this.name = goal.name || 'User Goal';
     this.description = (goal.description || '').trim();
-    this.freq = goal.frequency || 1;
     this.createdBy = userId;
   }
 }
@@ -18,7 +17,7 @@ exports.createGoal = async (req, res) => {
   try {
     const goal = new MetrixGoal(req.body, req.userData.userId);
     await dbconn.executeMysqlQuery(queries.CREATE_GOAL, [
-      goal.name, goal.description, goal.freq, goal.createdBy
+      goal.name, goal.description, goal.createdBy
     ]);
     res.status(200).json({
       message: `Goal created successfully.`
@@ -46,7 +45,6 @@ exports.fetchAllGoals = async (req, res) => {
       goalId: rows[0].goalId,
       name: rows[0].name,
       description: rows[0].description,
-      frequency: rows[0].frequency,
       createdDate: rows[0].createdDate,
       updates: rows.filter(r => r.updateId).map(r => ({
         updateId: r.updateId,
