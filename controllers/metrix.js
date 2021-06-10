@@ -2,7 +2,7 @@ const dbconn = require('../utilities/database_connectors');
 const queries = require('../queries/metrix');
 
 class MetrixGoal {
-  // new posts come in as type { title, description, frequency }
+  // new posts come in as type { title, description }
   constructor(goal, userId) {
     this.name = goal.name || 'User Goal';
     this.description = (goal.description || '').trim();
