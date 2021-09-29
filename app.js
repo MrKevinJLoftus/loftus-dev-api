@@ -6,6 +6,7 @@ const bodyParser = require('body-parser');
 const userRoutes = require('./routes/user');
 const blogRoutes = require('./routes/blog-post');
 const metrixRoutes = require('./routes/metrix');
+const mealPrepRoutes = require('./routes/meal-prep');
 
 const app = express();
 
@@ -23,6 +24,7 @@ app.use((req, res, next) => {
 app.use("/api/user", userRoutes);
 app.use("/api/blog", blogRoutes);
 app.use("/api/metrix", metrixRoutes);
+app.use("/api/meal-prep", mealPrepRoutes);
 
 app.use((req, res, next) => {
     console.log('sending index.html');
