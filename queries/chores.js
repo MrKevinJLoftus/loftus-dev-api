@@ -24,5 +24,13 @@ module.exports = {
     (chore_id, date_completed, person_completed, notes)
     values (?, now(), ?, ?)`,
   GET_ALL_PEOPLE: `select * from chore_people order by name`,
-  CREATE_PERSON: `insert into chore_people (name) values (?)`
+  CREATE_PERSON: `insert into chore_people (name) values (?)`,
+  GET_TASK_DASHBOARD: `select j.id, c.description, MAX(j.date_completed) as date_completed, p.name, j.notes
+    from chore_jobs j
+    inner join chores c
+      on j.chore_id = c.id
+    inner join chore_people p
+      on j.person_completed = p.id
+    group by j.chore_id
+    order by c.description desc`
 }

@@ -1,4 +1,4 @@
-const queries = require('../queries/blog');
+const queries = require('../queries/chores');
 const dbconn = require('../utilities/database_connectors');
 
 // router.post("/", checkAdmin, asyncWrapper(choresController.createChore));
@@ -12,110 +12,162 @@ const dbconn = require('../utilities/database_connectors');
 // router.get("/dashboard", checkAdmin, asyncWrapper(choresController.getDashboardData));
 
 /**
- * Create new blog post and save it to the database.
+ * Create new chore and save it to the database.
  */
 exports.createChore = async (req, res) => {
-  await dbconn.executeMysqlQuery(queries.CREATE_POST, [
-    newChore.title, newChore.kebabTitle, newChore.body,
-    newChore.blurb, newChore.tags && newChore.tags.join(','), newChore.createdBy
+  await dbconn.executeMysqlQuery(queries.CREATE_CHORE, [
+    req.body.description
   ]);
   res.status(200).json({
-    message: `Blog post saved successfully.`
+    message: `Chore created successfully.`
   });
 }
 
 /**
- * Fetch a specific blog post by its kebabTitle.
+ * Fetch a specific chore by ID.
  */
 exports.fetchChoreById = async (req, res) => {
-  const foundChore = await dbconn.executeMysqlQuery(queries.FIND_POST_BY_ID, [req.params.id]);
+  const foundChore = await dbconn.executeMysqlQuery(queries.FIND_CHORE_BY_ID, [req.params.id]);
   if (!foundChore || foundChore.length < 1) {
     res.status(404).json({
-      message: `Error retrieving blog post.`
+      message: `Error retrieving chore.`
     });
   } else {
-    splitChoreTags(foundChore[0]);
     res.status(200).json({
-      post: foundChore[0],
-      message: `Successfully fetched blog post.`
+      chore: foundChore[0],
+      message: `Successfully fetched chore.`
     });
   }
 }
 
 /**
- * Fetch all blog posts' titles and blurbs.
- * TODO: Lazily paginate for future case when many posts exist and this becomes inefficient.
+ * Fetch all chores.
  */
 exports.fetchAllChores = async (req, res) => {
-  const allChores = await dbconn.executeMysqlQuery(queries.GET_ALL_POSTS);
+  const allChores = await dbconn.executeMysqlQuery(queries.GET_ALL_CHORES);
   if (!allChores) {
     res.status(404).json({
-      message: `Error fetching blog posts.`
+      message: `Error fetching chores.`
     });
   } else {
-    for (let i = 0; i < allChores.length; i++) {
-      splitChoreTags(allChores[i]);
-    }
     res.status(200).json({
-      posts: allChores,
-      message: `Successfully fetched blog posts.`
+      chores: allChores,
+      message: `Successfully fetched chores.`
     });
   }
 }
 
 /**
- * Set the deleted flag on the specified post.
+ * Delete specified chore.
  */
 exports.deleteChoreById = async (req, res) => {
-  const foundChore = await dbconn.executeMysqlQuery(queries.FIND_POST_BY_ID, [req.params.id]);
+  const foundChore = await dbconn.executeMysqlQuery(queries.DELETE_CHORE_BY_ID, [req.params.id]);
   if (!foundChore || foundChore.length < 1) {
     res.status(404).json({
-      message: `Error deleting blog post.`
+      message: `Error deleting chore.`
     });
   } else {
-    // set deleted to 1
-    await dbconn.executeMysqlQuery(queries.DELETE_POST_BY_ID, [foundChore[0].id]);
+    await dbconn.executeMysqlQuery(queries.DELETE_CHORE_BY_ID, [foundChore[0].id]);
     res.status(200).json({
-      message: `Successfully deleted blog post.`
+      message: `Successfully deleted chore.`
     });
   }
 }
 
 /**
- * Updates an existing post with the details provided.
+ * Updates an existing chore with the details provided.
  */
 exports.updateChoreById = async (req, res) => {
-  const updatedChore = new Chore(req.body.blogChore, req.userData.userId);
-  const foundChore = await dbconn.executeMysqlQuery(queries.FIND_POST_BY_ID, [req.params.id]);
+  const foundChore = await dbconn.executeMysqlQuery(queries.UPDATE_CHORE_BY_ID, [req.params.id]);
   if (!foundChore || foundChore.length < 1) {
     res.status(404).json({
-      message: `Error updating blog post.`
+      message: `Error updating chore.`
     });
   } else {
     await dbconn.executeMysqlQuery(
       queries.UPDATE_POST_BY_ID,
       [
-        updatedChore.title,
-        updatedChore.kebabTitle,
-        updatedChore.body,
-        updatedChore.blurb,
-        updatedChore.tags && updatedChore.tags.join(','),
-        updatedChore.createdBy,
+        req.body.description,
         req.params.id
       ]
     );
     res.status(200).json({
-      message: `Successfully updated blog post.`
+      message: `Successfully updated chore.`
     });
   }
 }
 
 /**
- * Convert comma delimited string to array.
- * @param {*} blogChore 
+ * Create new chore person and save it to the database.
  */
-function splitChoreTags(blogChore) {
-  if (blogChore.tags) {
-    blogChore.tags = blogChore.tags.split(',');
+ exports.createChorePerson = async (req, res) => {
+  await dbconn.executeMysqlQuery(queries.CREATE_PERSON, [
+    req.body.name
+  ]);
+  res.status(200).json({
+    message: `Chore person created successfully.`
+  });
+}
+
+/**
+ * Fetch all chore people.
+ */
+exports.fetchAllPeople = async (req, res) => {
+  const allPeople = await dbconn.executeMysqlQuery(queries.GET_ALL_PEOPLE);
+  if (!allPeople) {
+    res.status(404).json({
+      message: `Error fetching chore people.`
+    });
+  } else {
+    res.status(200).json({
+      people: allPeople,
+      message: `Successfully fetched chore people.`
+    });
+  }
+}
+
+/**
+ * Log new completed task to the database.
+ */
+ exports.logNewTask = async (req, res) => {
+  await dbconn.executeMysqlQuery(queries.CREATE_PERSON, [
+    req.body.name
+  ]);
+  res.status(200).json({
+    message: `Chore person created successfully.`
+  });
+}
+
+/**
+ * Fetch all tasks.
+ */
+ exports.fetchAllTasks = async (req, res) => {
+  const allTasks = await dbconn.executeMysqlQuery(queries.GET_ALL_TASKS);
+  if (!allTasks) {
+    res.status(404).json({
+      message: `Error fetching tasks.`
+    });
+  } else {
+    res.status(200).json({
+      tasks: allTasks,
+      message: `Successfully fetched tasks.`
+    });
+  }
+}
+
+/**
+ * Fetch most recently completed task for each chore.
+ */
+ exports.getDashboardData = async (req, res) => {
+  const dashboardData = await dbconn.executeMysqlQuery(queries.GET_TASK_DASHBOARD);
+  if (!dashboardData) {
+    res.status(404).json({
+      message: `Error fetching task dashboard data.`
+    });
+  } else {
+    res.status(200).json({
+      data: dashboardData,
+      message: `Successfully fetched task dashboard data.`
+    });
   }
 }
