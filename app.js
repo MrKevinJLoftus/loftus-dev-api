@@ -5,6 +5,7 @@ const bodyParser = require('body-parser');
 // external routing files
 const userRoutes = require('./routes/user');
 const blogRoutes = require('./routes/blog-post');
+const choresRoutes = require('./routes/chores');
 
 const app = express();
 
@@ -21,6 +22,7 @@ app.use((req, res, next) => {
 
 app.use("/api/user", userRoutes);
 app.use("/api/blog", blogRoutes);
+app.use("/api/chores", choresRoutes);
 
 app.use((req, res, next) => {
     console.log('sending index.html');
