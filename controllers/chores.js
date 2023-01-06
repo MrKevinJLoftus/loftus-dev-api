@@ -130,11 +130,12 @@ exports.fetchAllPeople = async (req, res) => {
  * Log new completed task to the database.
  */
  exports.logNewTask = async (req, res) => {
+   const { choreId, personId, notes } = req.body.task;
   await dbconn.executeMysqlQuery(queries.CREATE_PERSON, [
-    req.body.name
+    choreId, personId, notes
   ]);
   res.status(200).json({
-    message: `Chore person created successfully.`
+    message: `Task logged successfully.`
   });
 }
 

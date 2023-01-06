@@ -12,7 +12,7 @@ router.delete("/:id", checkAdmin, asyncWrapper(choresController.deleteChore));
 router.patch("/:id", checkAdmin, asyncWrapper(choresController.updateChore));
 
 router.get("/tasks", checkAdmin, asyncWrapper(choresController.fetchAllTasks));
-router.post("/task", checkAdmin, asyncWrapper(choresController.logNewTask));
+router.post("/tasks", checkAdmin, asyncWrapper(choresController.logNewTask));
 router.get("/dashboard", checkAdmin, asyncWrapper(choresController.getDashboardData));
 
 router.get("/people", checkAdmin, asyncWrapper(choresController.fetchAllPeople));

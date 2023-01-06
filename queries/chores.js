@@ -13,7 +13,7 @@ module.exports = {
     set
       description = ?
     where chore_id = ?`,
-  GET_ALL_TASKS: `select j.id, c.description, j.date_completed, p.name, j.notes
+  GET_ALL_TASKS: `select j.id, c.description, j.date_completed as dateCompleted, p.name, j.notes
     from chore_jobs j
     inner join chores c
       on j.chore_id = c.id
@@ -25,7 +25,7 @@ module.exports = {
     values (?, now(), ?, ?)`,
   GET_ALL_PEOPLE: `select * from chore_people order by name`,
   CREATE_PERSON: `insert into chore_people (name) values (?)`,
-  GET_TASK_DASHBOARD: `select j.id, c.description, MAX(j.date_completed) as date_completed, p.name, j.notes
+  GET_TASK_DASHBOARD: `select c.description as choreDesc, DATE_FORMAT(MAX(j.date_completed), '%m-%d-%Y %H:%i:%s') as dateCompleted, p.name as worker, j.notes
     from chore_jobs j
     inner join chores c
       on j.chore_id = c.id
