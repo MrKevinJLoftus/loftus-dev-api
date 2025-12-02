@@ -19,12 +19,12 @@ app.use((req, res, next) => {
     next();
 });
 
-app.use("/api/user", userRoutes);
-app.use("/api/blog", blogRoutes);
+// app.use("/api/user", userRoutes);
+// app.use("/api/blog", blogRoutes);
 
 app.use((req, res, next) => {
     console.log('sending index.html');
-    res.sendFile(path.join(__dirname, "ui", "index.html"));
+    res.sendFile(path.join(__dirname, "ui", "browser", "index.html"));
 });
 
 // Custom error handler
